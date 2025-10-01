@@ -14,21 +14,21 @@ import helper
 from RLS import RLS
 
 VirtualStick = pyvjoy.VJoyDevice(1)
-RateGain = [120, 90, 10] # roll rate, pitch rate, sideslip angle
+RateGain = [120, 90, 10] # roll rate, pitch rate, yaw rate
 PDgain = np.array([[1, 0.0],    # Roll [kp, kd]
                    [1, 0.0],    # Pitch
                    [1, 0.0]]).T # Yaw
-PIgain = np.array([[0.8, 0.001],    # Roll [kp, kd]
+PIgain = np.array([[0.8, 0.001],    # Roll [kp, ki]
                    [0.7, 0.001],    # Pitch
                    [0.1, 0.001]]).T # Yaw
-settingMode = False
-INDI = False
+settingMode = False # Set to True to use the setting mode to change key mapping
+INDI = False # Set to True to use estimated INDI controller, may be unstable
 if INDI:
     L_estimator = RLS(size=7)
     M_estimator = RLS(size=7)
     N_estimator = RLS(size=7)
 
-u = np.array([0.0,0.0,0.0])
+u = np.array([0.0, 0.0, 0.0])
 Bmat = np.array( [[1,0,0],
                   [0,1,0],
                   [0,0,1]])
