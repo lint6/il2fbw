@@ -6,7 +6,7 @@ UDP_PORT = 20888
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
-print(f"Listening for IL-2 telemetry on {UDP_IP}:{UDP_PORT}")
+print(f"Listening for IL-2 telemetry on {UDP_IP}:{UDP_PORT}\n")
 
 def reciveData():
     global sock
