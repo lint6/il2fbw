@@ -14,10 +14,10 @@ import helper
 from RLS import RLS
 
 VirtualStick = pyvjoy.VJoyDevice(1)
-RateGain = [120, 75, 10] # roll rate, pitch rate, yaw rate  
-PIDgain = np.array([[150.0, 15.0, 50.0],    # Roll [kp, kd]
-                    [500.0, 30.0, 50.0],    # Pitch
-                    [650.0, 5.0, 50.0]]).T # Yaw
+RateGain = [120, 60, 10] # roll rate, pitch rate, yaw rate  
+PIDgain = np.array([[250.0, 15.0, 50.0],    # Roll [kp, kd]
+                    [500.0, 30.0, 25.0],    # Pitch
+                    [200.0, 120.0, 50.0]]).T # Yaw
 PIgain = np.array([[0.8, 0.001],    # Roll [kp, ki]
                    [0.7, 0.001],    # Pitch
                    [0.1, 0.001]]).T # Yaw
@@ -30,9 +30,7 @@ if INDI:
     N_estimator = RLS(size=5)
 
 u = np.array([0.0, 0.0, 0.0])
-Bmat = np.array( [[1,0,0],
-                  [0,1,0],
-                  [0,0,1]])
+
 Running = True
 omega = deque(maxlen=5)
 angle = deque(maxlen=5)
@@ -99,9 +97,9 @@ while Running:
             # M_estimator.Interate(M_regression_vector,  target_vector[1])
             # N_estimator.Interate(LN_regression_vector, target_vector[2])
 
-            Bmat = np.array([[2500, 0, 250],
+            Bmat = np.array([[2500, 0, 15],
                              [0, 5000, 0],
-                             [-250, 0, 1500]
+                             [-250, 0, 750]
                              ])
 
             '''INDI'''
