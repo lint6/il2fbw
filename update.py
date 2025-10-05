@@ -1,5 +1,3 @@
-import pyvjoy
-
 def to_vjoy(x):
     try:
         int(x)

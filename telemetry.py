@@ -13,5 +13,4 @@ def reciveData():
     data, addr = sock.recvfrom(4096)  # receive UDP packet
     if len(data) == 44:  # motion packet
         values = struct.unpack('<11f', data)  # 11 floats
-        # TODO: map these to roll/pitch/yaw, velocity, etc.
         return values
