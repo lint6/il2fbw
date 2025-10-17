@@ -23,11 +23,15 @@ def detectStick():
             physical_stick = js
     return physical_stick
 
-def getStickInput(stick, deadzone = 0.02):
+def getStickInput(stick, deadzone = [0.01, 0.06, 0.20]):
     pygame.event.pump()
     axes = [stick.get_axis(i) for i in range(stick.get_numaxes())]
     # Apply deadzone
-    for i in range(len(axes)):
-        if abs(axes[i]) <= 0.025:
+    for i in range(len(axes)-1):
+        if abs(axes[i]) <= deadzone[i]:
             axes[i] = 0
+        else:
+            sign = np.sign(axes[i])
+            zone = sign*deadzone[i]
+            axes[i] = (axes[i] - zone) * (1/(1-deadzone[i]))
     return np.array(axes)

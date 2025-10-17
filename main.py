@@ -12,18 +12,18 @@ import telemetry
 import aircraft
 
 VirtualStick = pyvjoy.VJoyDevice(1)
-RateGain = [60, 90, -25] # roll rate, pitch rate, Side force
-PDgain = np.array([[16, 0.015],    # Roll [kp, Td]
-                   [7, 0.01],    # Pitch
-                   [3.5, 0.005]]).T # Yaw
-Bmat = np.array([[0.065, 0, 0.001],
+RateGain = [60, 90, 25] # roll rate, pitch rate, Side force
+PDgain = np.array([[22, 0.05],    # Roll [kp, Td]
+                   [8, 0.02],    # Pitch
+                   [1.5, 0.02]]).T # Yaw
+Bmat = np.array([[0.065, 0, 0.0],
                  [0, 0.007, 0],
                  [0.0, 0, 0.009]
                  ])
 
 FlightControl = aircraft.Aircraft(RateGain, PDgain, Bmat)
 settingMode = False # Set to True to use the setting mode to change key mapping
-tuningMode = False # Forces the script to run regardless of IL-2 status
+tuningMode = False # Limit running time and generate graphs at the end
 Running = True
 
 control_stick = stick.detectStick()

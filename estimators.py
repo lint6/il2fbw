@@ -1,7 +1,7 @@
 import numpy as np
 import helper
 
-def accelerationCleaner(rotation, acceleration):
+def accelerationCleaner(rotation, acceleration, airspeed):
     '''
     Removes gravity from the acceleration
     '''
@@ -9,7 +9,8 @@ def accelerationCleaner(rotation, acceleration):
     gravity = rotation.T @ gravity
     acceleration_clean = acceleration - gravity
     acceleration_world = rotation @ acceleration
-    return acceleration, acceleration_clean, acceleration_world
+    acceleration_clean_ND = acceleration_clean / (0.5 * airspeed**2)
+    return acceleration, acceleration_clean, acceleration_world, acceleration_clean_ND
     
 def airspeedEstimator(omega, acceleration, velocity, dt=1/50):
     '''
@@ -48,5 +49,5 @@ def airspeedEstimator(omega, acceleration, velocity, dt=1/50):
 def aoaEstimator(V, acc, CLa = 2*np.pi, area=20, mass = 3000):
     AoA = -1*(2 * acc[-1][-1] * mass) / (CLa * V[0]**2 * area)
     sideslip = -1*(2 * acc[-1][1] * mass) / (CLa * V[0]**2 * area)
-    sideslip = np.clip(sideslip, -25, 25)
+    sideslip = np.clip(sideslip, -15, 15)
     return AoA, sideslip

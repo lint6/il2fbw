@@ -6,13 +6,29 @@ def toRate(RateGain, sideslip, stick):
     RateGain: [roll, pitch, Sideforce]
     '''
     rate_set = RateGain * stick[0:3]
-    rate_set[-1] = -1*(rate_set[-1] - 800*sideslip)
-    rate_set[-1] = np.clip(rate_set[-1], -30, 30)
+    sideslip_damp = np.clip(-1*sideslip, -5, 5)
+    raw_rate = rate_set[-1]
+    rate_set[-1] = np.clip(sideslip_damp+raw_rate, -30, 30)
     return np.deg2rad(rate_set)
+
+def aoaLimiter(value, control_var, limit = [-10, 15], slope = -150):
+    '''
+    value: value to be limited
+    limit: limits
+    control_var: the variable used to limit
+    slope: the slope of the limiter function
+    '''
+    
+    limit = np.deg2rad(limit)
+    control_var = np.clip(control_var, np.min(limit)-0.15, np.max(limit)+0.15)
+    value[1] = np.clip(value[1],
+                    slope*(control_var-np.min(limit))**3,
+                    slope*(control_var-np.max(limit))**3)
+    return value
     
 def LC_pd(error, LCgain, h):
     '''
-    error: 3x3 matrix of past three error per channel
+    error: 3x3 matrix of past three errord per channel
     LCgain: array of gain
     '''
     vc_p = error[-1] * LCgain[0]
@@ -28,14 +44,16 @@ def LC_pi(error, error_int, LCgain):
     vc_i = error_int * LCgain[1]
     return vc_p + vc_i
 
-def INDI(vc, x, u, Bmat, h):
+def INDI(vc, x, aoa, u, Bmat, h):
     '''
     Rate: 3x1 vector of current aircraft rate
     input: 3x1 vector of desired aircraft rate
     '''
     omega_dot = helper.backwardDiff(x, h)
+    # vc = aoaLimiter(vc, aoa)
     e_dot = vc - omega_dot
     du = helper.invert(Bmat) @ e_dot
+    du = np.clip(du, -0.3, 0.3)
     u += du
     u = np.clip(u, -1, 1)
     return u, du, omega_dot
@@ -52,7 +70,7 @@ def controlLoopINDI(x, u, AoA, input, h, LCgain, Bmat):
     input = np.array(input)
     error = input - x
     vc = LC_pd(error, LCgain, h)
-    u, du, omega_dot = INDI(vc, x, u, Bmat, h)
+    u, du, omega_dot = INDI(vc, x, AoA, u, Bmat, h, )
     return u, du, [vc, omega_dot]
 
 def controlLoopRate(x, error_integral, input, LCgain):
